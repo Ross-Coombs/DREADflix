@@ -29,7 +29,7 @@
                 films.forEach(film => {
                     const filmElement = document.createElement('div');
                     filmElement.className = 'film';
-
+                    console.log(film.FilmThumb);
                     filmElement.innerHTML = `
                         <img src="${film.FilmThumb}" alt="${film.FilmID}">
                         <div>
