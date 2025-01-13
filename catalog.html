@@ -20,90 +20,96 @@
         console.log(`Welcome, ${username}`);
     }
 
+    // Make watchlist a global variable
+    let watchlist = JSON.parse(localStorage.getItem('watchlist') || '[]');
+
     async function fetchFilms() {
-    try {
-        const response = await fetch('https://gt617pnj67.execute-api.us-east-1.amazonaws.com/main/films', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
+        try {
+            const response = await fetch('https://gt617pnj67.execute-api.us-east-1.amazonaws.com/main/films', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const films = await response.json();
+
+            console.log('Current Watchlist:', watchlist);
+
+            const filmsContainer = document.getElementById('films');
+            filmsContainer.innerHTML = '';
+
+            films.forEach(film => {
+                const filmElement = document.createElement('div');
+                filmElement.className = 'film';
+
+                // Check if the film is in the watchlist
+                const inWatchlist = watchlist.includes(film.FilmID);
+                console.log(`FilmID: ${film.FilmID}, In Watchlist: ${inWatchlist}`);
+
+                filmElement.innerHTML = `
+                    <img src="${film.FilmThumb}" alt="${film.FilmID}">
+                    <div>
+                        <h2>${film.FilmTitle}</h2>
+                        <a href="${film.FilmAddress}">Watch Film</a>
+                        ${
+                            inWatchlist 
+                                ? '<span class="watchlist-status">On Watchlist</span>' 
+                                : `<button onclick="addToWatchlist('${film.FilmID}')">Add to Watchlist</button>`
+                        }
+                    </div>
+                `;
+                filmsContainer.appendChild(filmElement);
+            });
+        } catch (error) {
+            console.error('Error fetching films:', error);
+        }
+    }
+
+    async function addToWatchlist(FilmID) {
+        try {
+            const username = localStorage.getItem('username'); // Retrieve username if needed
+            if (!username) {
+                alert("Username is missing. Please log in.");
+                return;
             }
-        });
+            const payload = {
+                username: username,
+                film_id: FilmID
+            };
 
-        const films = await response.json();
+            console.log('Sending payload:', payload);
 
-        // Parse watchlist from localStorage
-        const watchlist = JSON.parse(localStorage.getItem('watchlist') || '[]');
-        console.log('Current Watchlist:', watchlist);
+            const response = await fetch('https://gt617pnj67.execute-api.us-east-1.amazonaws.com/main/films', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload),
+            });
 
-        const filmsContainer = document.getElementById('films');
-        filmsContainer.innerHTML = '';
+            const result = await response.json();
+            console.log('API Response:', result);
 
-        films.forEach(film => {
-            const filmElement = document.createElement('div');
-            filmElement.className = 'film';
+            if (response.ok) {
+                alert("Added to watchlist successfully!");
+                
+                // Update the watchlist
+                if (!watchlist.includes(FilmID)) {
+                    watchlist.push(FilmID);
+                    localStorage.setItem('watchlist', JSON.stringify(watchlist));
+                }
 
-            // Check if the film is in the watchlist
-            const inWatchlist = watchlist.includes(film.FilmID);
-            console.log(`FilmID: ${film.FilmID}, In Watchlist: ${inWatchlist}`);
-
-            filmElement.innerHTML = `
-                <img src="${film.FilmThumb}" alt="${film.FilmID}">
-                <div>
-                    <h2>${film.FilmTitle}</h2>
-                    <a href="${film.FilmAddress}">Watch Film</a>
-                    ${
-                        inWatchlist 
-                            ? '<span class="watchlist-status">On Watchlist</span>' 
-                            : `<button onclick="addToWatchlist('${film.FilmID}')">Add to Watchlist</button>`
-                    }
-                </div>
-            `;
-            filmsContainer.appendChild(filmElement);
-        });
-    } catch (error) {
-        console.error('Error fetching films:', error);
-    }
-}
-
-
-        async function addToWatchlist(FilmID) {
-    try {
-        console.log('Current Watchlist:', watchlist);
-        const username = localStorage.getItem('username'); // Retrieve username if needed
-        if (!username) {
-            alert("Username is missing. Please log in.");
-            return;
+                fetchFilms(); // Refresh films to update the watchlist status
+            } else {
+                alert(result.message || 'Failed to add to watchlist.');
+            }
+        } catch (error) {
+            console.error('Error adding to watchlist:', error);
         }
-        const payload = {
-            username: username,
-            film_id: FilmID
-        };
-
-        console.log('Sending payload:', payload);
-
-        const response = await fetch('https://gt617pnj67.execute-api.us-east-1.amazonaws.com/main/films', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(payload),
-        });
-
-        const result = await response.json();
-        console.log('API Response:', result);
-
-        if (response.ok) {
-            alert("Added to watchlist successfully!");
-            fetchFilms(); // Refresh films to update the watchlist status
-        } else {
-            alert(result.message || 'Failed to add to watchlist.');
-        }
-    } catch (error) {
-        console.error('Error adding to watchlist:', error);
     }
-}
 
-        fetchFilms();
+    fetchFilms();
     </script>
 </body>
 </html>
