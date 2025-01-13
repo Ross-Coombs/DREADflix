@@ -69,3 +69,7 @@ body {
 .film a {
     color: #007BFF;
 }
+.watchlist-status {
+    color: green;
+    font-weight: bold;
+}
