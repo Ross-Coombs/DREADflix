@@ -9,6 +9,7 @@
 <body>
     <h1>Film Library</h1>
     <div id="films"></div>
+    <button id="logoutBtn">Logout</button>
 
     <script>
     // Redirect to login page if not logged in
@@ -18,6 +19,14 @@
     } else {
         const username = localStorage.getItem('username');
         console.log(`Welcome, ${username}`);
+    }
+
+    document.getElementById('logoutBtn').addEventListener('click', logout);
+    function logout() {
+        localStorage.removeItem('username');
+        localStorage.removeItem('isLoggedIn');
+        localStorage.removeItem('watchlist');
+        window.location.href = 'login.html';
     }
 
     // Make watchlist a global variable
