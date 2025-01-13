@@ -40,8 +40,13 @@
                 const result = await response.json();
                 console.log('API Response:', result);
 
-                if (result.statusCode === 200) {
-                    alert(result.message || 'Login successful');
+                if (response.status === 200) {
+                    // Store the login state
+                    localStorage.setItem('isLoggedIn', 'true');
+                    localStorage.setItem('username', data.username);
+
+                    // Redirect to another page
+                    window.location.href = 'your-redirect-url.html';
                 } else {
                     alert(result.message || 'Login failed');
                 }
