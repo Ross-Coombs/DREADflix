@@ -62,16 +62,19 @@
             alert("Username is missing. Please log in.");
             return;
         }
+        const payload = {
+            username: username,
+            film_id: filmID
+        };
+
+        console.log('Sending payload:', payload);
 
         const response = await fetch('https://gt617pnj67.execute-api.us-east-1.amazonaws.com/main/films', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({
-                FilmID: FilmID, // Pass the film ID
-                Username: username // Include the username if required
-            }),
+            body: JSON.stringify(payload),
         });
 
         const result = await response.json();
