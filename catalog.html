@@ -30,8 +30,10 @@
         });
 
         const films = await response.json();
+
+        // Parse watchlist from localStorage
         const watchlist = JSON.parse(localStorage.getItem('watchlist') || '[]');
-        console.log('Films:', films);
+        console.log('Current Watchlist:', watchlist);
 
         const filmsContainer = document.getElementById('films');
         filmsContainer.innerHTML = '';
@@ -39,7 +41,11 @@
         films.forEach(film => {
             const filmElement = document.createElement('div');
             filmElement.className = 'film';
+
+            // Check if the film is in the watchlist
             const inWatchlist = watchlist.includes(film.FilmID);
+            console.log(`FilmID: ${film.FilmID}, In Watchlist: ${inWatchlist}`);
+
             filmElement.innerHTML = `
                 <img src="${film.FilmThumb}" alt="${film.FilmID}">
                 <div>
@@ -62,6 +68,7 @@
 
         async function addToWatchlist(FilmID) {
     try {
+        console.log('Current Watchlist:', watchlist);
         const username = localStorage.getItem('username'); // Retrieve username if needed
         if (!username) {
             alert("Username is missing. Please log in.");
