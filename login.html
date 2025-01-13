@@ -40,7 +40,7 @@
                 const result = await response.json();
                 console.log('API Response:', result);
 
-                if (response.status === 200) {
+                if (result.statusCode === 200) {
                     alert(result.message || 'Login successful');
                 } else {
                     alert(result.message || 'Login failed');
