@@ -21,6 +21,7 @@
                 });
 
                 const films = await response.json();
+                const watchlist = JSON.parse(localStorage.getItem('watchlist') || '[]');
                 console.log('Films:', films);
 
                 const filmsContainer = document.getElementById('films');
@@ -29,12 +30,13 @@
                 films.forEach(film => {
                     const filmElement = document.createElement('div');
                     filmElement.className = 'film';
-                    console.log(film.FilmThumb);
+                    const inWatchlist = watchlist.includes(film.FilmID);
                     filmElement.innerHTML = `
                         <img src="${film.FilmThumb}" alt="${film.FilmID}">
                         <div>
                             <h2>${film.FilmTitle}</h2>
                             <a href="${film.FilmAddress}">Watch Film</a>
+                            ${inWatchlist ? '<span>In Watchlist</span>' : `<button onclick="addToWatchlist('${film.FilmID}')">Add to Watchlist</button>`}
                         </div>
                     `;
                     filmsContainer.appendChild(filmElement);
@@ -43,6 +45,11 @@
                 console.error('Error fetching films:', error);
             }
         }
+
+        async function addToWatchlist(filmID) {
+            try {
+                const username = localStorage.getItem('username');
+                const response = await fetch('https://')
 
         fetchFilms();
     </script>
