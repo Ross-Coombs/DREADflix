@@ -11,6 +11,15 @@
     <div id="films"></div>
 
     <script>
+    // Redirect to login page if not logged in
+    if (!localStorage.getItem('isLoggedIn')) {
+        alert('You must be logged in to access this page.');
+        window.location.href = 'login.html';
+    } else {
+        const username = localStorage.getItem('username');
+        console.log(`Welcome, ${username}`);
+    }
+
         async function fetchFilms() {
             try {
                 const response = await fetch('https://gt617pnj67.execute-api.us-east-1.amazonaws.com/main/films', {
@@ -48,7 +57,7 @@
 
         async function addToWatchlist(FilmID) {
     try {
-        const username = localStorage.getItem('Username'); // Retrieve username if needed
+        const username = localStorage.getItem('username'); // Retrieve username if needed
         if (!username) {
             alert("Username is missing. Please log in.");
             return;
